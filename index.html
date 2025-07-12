@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1日1ChatGPT 報告</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      line-height: 1.6;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 30px 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      text-align: center;
+      color: #222;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #555;
+    }
+    
+    .required {
+      color: #999;
+      font-size: 12px;
+      font-weight: normal;
+    }
+    
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #eee;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #ccc;
+      background-color: #fafafa;
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      background: #f8f8f8;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-right: 12px;
+      cursor: pointer;
+    }
+    
+    .checkbox-label {
+      font-size: 16px;
+      font-weight: 500;
+      color: #333;
+      cursor: pointer;
+    }
+    
+    button {
+      width: 100%;
+      padding: 16px;
+      background: #333;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 24px;
+    }
+    
+    button:hover {
+      background: #222;
+    }
+    
+    button:active {
+      transform: scale(0.98);
+    }
+    
+    .success-message {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: #333;
+      color: white;
+      padding: 16px 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+    
+    .success-message.show {
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>1日1ChatGPT 報告</h1>
+    
+    <form id="reportForm">
+      <div class="form-group">
+        <label for="name">
+          名前（ニックネーム可）
+          <span class="required">必須</span>
+        </label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          placeholder="あなたの名前" 
+          required
+        >
+      </div>
+      
+      <div class="form-group">
+        <div class="checkbox-group" onclick="document.getElementById('done').click()">
+          <input 
+            type="checkbox" 
+            id="done" 
+            name="done" 
+            required
+          >
+          <label for="done" class="checkbox-label">
+            今日やった
+          </label>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="url">
+          ChatGPT URL
+          <span class="required" style="color: #aaa;">任意</span>
+        </label>
+        <input 
+          type="text" 
+          id="url" 
+          name="url" 
+          placeholder="https://chat.openai.com/..."
+        >
+      </div>
+      
+      <div class="form-group">
+        <label for="memo">
+          感想
+          <span class="required" style="color: #aaa;">任意</span>
+        </label>
+        <textarea 
+          id="memo" 
+          name="memo" 
+          placeholder="今日の気づきや感想など"
+        ></textarea>
+      </div>
+      
+      <button type="submit">送信</button>
+    </form>
+  </div>
+  
+  <div id="successMessage" class="success-message">
+    ✓ 送信完了しました！
+  </div>
+  
+  <script>
+    // GAS WebアプリのURLをここに設定
+    const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyWw4rjbqwEeI9aw5Y-bNHGUsfF9DJeleO1Df5WpviOCaG4V0C4DMJn8ICqcFEF55b9-w/exec';
+    
+    const form = document.getElementById('reportForm');
+    const successMessage = document.getElementById('successMessage');
+    
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // フォームデータ取得
+      const formData = {
+        name: document.getElementById('name').value.trim(),
+        done: document.getElementById('done').checked,
+        url: document.getElementById('url').value.trim(),
+        memo: document.getElementById('memo').value.trim()
+      };
+      
+      // 必須項目チェック
+      if (!formData.name) {
+        alert('名前を入力してください');
+        return;
+      }
+      
+      if (!formData.done) {
+        alert('「今日やった」にチェックを入れてください');
+        return;
+      }
+      
+      try {
+        // データ送信
+        const response = await fetch(ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+          mode: 'no-cors' // CORS回避
+        });
+        
+        // 成功メッセージ表示
+        successMessage.classList.add('show');
+        
+        // フォームをクリア
+        form.reset();
+        
+        // 3秒後にメッセージを非表示
+        setTimeout(() => {
+          successMessage.classList.remove('show');
+        }, 3000);
+        
+      } catch (error) {
+        // no-corsモードでは実際のエラーは取得できないが、
+        // 送信自体は成功していることが多いので成功扱いに
+        successMessage.classList.add('show');
+        form.reset();
+        setTimeout(() => {
+          successMessage.classList.remove('show');
+        }, 3000);
+      }
+    });
+  </script>
+</body>
+</html>

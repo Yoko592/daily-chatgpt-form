@@ -1,0 +1,13 @@
+{
+  "name": "daily-chatgpt-form",
+  "version": "1.0.0",
+  "description": "1日1ChatGPT報告フォーム",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 3000",
+    "build": "echo 'Static site - no build required'"
+  },
+  "keywords": ["chatgpt", "form", "report"],
+  "author": "",
+  "license": "MIT"
+}
