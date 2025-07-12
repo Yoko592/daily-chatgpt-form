@@ -175,6 +175,19 @@
       </div>
       
       <div class="form-group">
+        <label for="depth">
+          深掘り回数
+          <span class="required" style="color: #aaa;">任意</span>
+        </label>
+        <input 
+          type="text" 
+          id="depth" 
+          name="depth" 
+          placeholder="3回"
+        >
+      </div>
+      
+      <div class="form-group">
         <label for="url">
           ChatGPT URL
           <span class="required" style="color: #aaa;">任意</span>
@@ -231,6 +244,7 @@
       const formData = {
         name: document.getElementById('name').value.trim(),
         done: document.getElementById('done').checked,
+        depth: document.getElementById('depth').value.trim(),
         url: document.getElementById('url').value.trim(),
         memo: document.getElementById('memo').value.trim()
       };
@@ -259,6 +273,7 @@
       
       // フォームをクリア（名前以外）
       document.getElementById('done').checked = false;
+      document.getElementById('depth').value = '';
       document.getElementById('url').value = '';
       document.getElementById('memo').value = '';
       
