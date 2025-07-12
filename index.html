@@ -246,6 +246,9 @@
         memo: document.getElementById('memo').value.trim()
       };
       
+      // デバッグ: コンソールにデータを出力
+      console.log('送信データ:', formData);
+      
       // 必須項目チェック
       if (!formData.name) {
         alert('名前を入力してください');
