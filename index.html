@@ -212,10 +212,7 @@
         ></textarea>
       </div>
       
-      <button type="submit">
-        送信<br>
-        <small style="font-size: 12px; font-weight: 400; opacity: 0.8;">(一度だけ押してお待ちください)</small>
-      </button>
+      <button type="submit">送信</button>
     </form>
   </div>
   
@@ -263,7 +260,7 @@
       // 即座にUI更新（ユーザビリティ向上）
       const submitBtn = document.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '送信中...<br><small style="font-size: 12px; font-weight: 400; opacity: 0.8;">お待ちください</small>';
+      submitBtn.textContent = '送信中...';
       
       // 名前を保存
       localStorage.setItem('chatgpt-form-name', formData.name);
@@ -292,7 +289,7 @@
       // 1.5秒後にボタンを元に戻す
       setTimeout(() => {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '送信<br><small style="font-size: 12px; font-weight: 400; opacity: 0.8;">(一度だけ押してお待ちください)</small>';
+        submitBtn.textContent = '送信';
       }, 1500);
       
       // 3秒後にメッセージを非表示
