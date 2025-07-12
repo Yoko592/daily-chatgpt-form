@@ -246,49 +246,44 @@
         return;
       }
       
-      try {
-        // データ送信
-        const response = await fetch(ENDPOINT, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
-          mode: 'no-cors' // CORS回避
-        });
-        
-        // 名前を保存
-        localStorage.setItem('chatgpt-form-name', formData.name);
-        
-        // 成功メッセージ表示
-        successMessage.classList.add('show');
-        
-        // フォームをクリア（名前以外）
-        document.getElementById('done').checked = false;
-        document.getElementById('url').value = '';
-        document.getElementById('memo').value = '';
-        
-        // 3秒後にメッセージを非表示
-        setTimeout(() => {
-          successMessage.classList.remove('show');
-        }, 3000);
-        
-      } catch (error) {
-        // 名前を保存
-        localStorage.setItem('chatgpt-form-name', formData.name);
-        
-        // no-corsモードでは実際のエラーは取得できないが、
-        // 送信自体は成功していることが多いので成功扱いに
-        successMessage.classList.add('show');
-        
-        // フォームをクリア（名前以外）
-        document.getElementById('done').checked = false;
-        document.getElementById('url').value = '';
-        document.getElementById('memo').value = '';
-        setTimeout(() => {
-          successMessage.classList.remove('show');
-        }, 3000);
-      }
+      // 即座にUI更新（ユーザビリティ向上）
+      const submitBtn = document.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '送信中...<br><small style="font-size: 12px; font-weight: 400; opacity: 0.8;">お待ちください</small>';
+      
+      // 名前を保存
+      localStorage.setItem('chatgpt-form-name', formData.name);
+      
+      // 成功メッセージ表示（即座に）
+      successMessage.classList.add('show');
+      
+      // フォームをクリア（名前以外）
+      document.getElementById('done').checked = false;
+      document.getElementById('url').value = '';
+      document.getElementById('memo').value = '';
+      
+      // バックグラウンドでデータ送信（結果を待たない）
+      fetch(ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+        mode: 'no-cors'
+      }).catch(() => {
+        // エラーでも何もしない（no-corsなので詳細不明）
+      });
+      
+      // 1.5秒後にボタンを元に戻す
+      setTimeout(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '送信<br><small style="font-size: 12px; font-weight: 400; opacity: 0.8;">(一度だけ押してお待ちください)</small>';
+      }, 1500);
+      
+      // 3秒後にメッセージを非表示
+      setTimeout(() => {
+        successMessage.classList.remove('show');
+      }, 3000);
     });
   </script>
 </body>
